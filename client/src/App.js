@@ -7,18 +7,20 @@ import ContactState from './context/contact/ContactState'
 
 import './App.css'
 
-const App = () => <ContactState>
-  <Router>
-    <Fragment>
-      <Navbar />
-      <div className="container">
-        <Switch>
-          <Route exact path='/' component={Home} />
-          <About exact path='/about' component={About} />
-        </Switch>
-      </div>
-    </Fragment>
-  </Router>
-</ContactState>
+const App = () => (
+	<ContactState>
+		<Router>
+			<Fragment>
+				<Navbar />
+				<div className='container'>
+					<Switch>
+						<Route exact path='/' component={Home} />
+						<About exact path='/about' component={About} />
+					</Switch>
+				</div>
+			</Fragment>
+		</Router>
+	</ContactState>
+)
 
 export default App
