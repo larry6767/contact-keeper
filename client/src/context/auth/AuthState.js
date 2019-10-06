@@ -8,11 +8,9 @@ import {
 	REGISTER_FAIL,
 	CLEAR_ERRORS,
 	USER_LOADED,
-	AUTH_ERROR
-	// USER_LOADED,
-	// AUTH_ERROR,
-	// LOGIN_SUCCESS,
-	// LOGIN_FAIL,
+	AUTH_ERROR,
+	LOGIN_SUCCESS,
+	LOGIN_FAIL
 	// LOGOUT,
 	// CLEAR_ERRORS
 } from '../types'
@@ -44,8 +42,8 @@ const AuthState = (props) => {
 		}
 	}
 
-	// Register user
-	const register = async (formData) => {
+	// Get token
+	const getToken = async (formData, url, successAction, failAction) => {
 		const config = {
 			headers: {
 				'Content-Type': 'application/json'
@@ -53,24 +51,27 @@ const AuthState = (props) => {
 		}
 
 		try {
-			const res = await axios.post('/api/users', formData, config)
+			const res = await axios.post(url, formData, config)
 
 			dispatch({
-				type: REGISTER_SUCCESS,
+				type: successAction,
 				payload: res.data
 			})
 
 			loadUser()
 		} catch (err) {
 			dispatch({
-				type: REGISTER_FAIL,
+				type: failAction,
 				payload: err.response.data.msg
 			})
 		}
 	}
 
+	// Register user
+	const register = (formData) => getToken(formData, '/api/users', REGISTER_SUCCESS, REGISTER_FAIL)
+
 	// Login user
-	const login = () => console.log('Login')
+	const login = (formData) => getToken(formData, '/api/auth', LOGIN_SUCCESS, LOGIN_FAIL)
 
 	// Logout
 	const logout = () => console.log('Logout')
