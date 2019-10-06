@@ -18,6 +18,7 @@ const ContactForm = () => {
 			if (current !== null) setContact(current)
 			else setContact(defaultState)
 		},
+		// eslint-disable-next-line
 		[ contactContext, current ]
 	)
 
