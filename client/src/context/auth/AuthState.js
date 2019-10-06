@@ -10,8 +10,8 @@ import {
 	USER_LOADED,
 	AUTH_ERROR,
 	LOGIN_SUCCESS,
-	LOGIN_FAIL
-	// LOGOUT,
+	LOGIN_FAIL,
+	LOGOUT
 	// CLEAR_ERRORS
 } from '../types'
 
@@ -74,7 +74,7 @@ const AuthState = (props) => {
 	const login = (formData) => getToken(formData, '/api/auth', LOGIN_SUCCESS, LOGIN_FAIL)
 
 	// Logout
-	const logout = () => console.log('Logout')
+	const logout = () => dispatch({ type: LOGOUT })
 
 	// Clear errors
 	const clearErrors = () =>
