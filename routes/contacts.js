@@ -10,51 +10,68 @@ const Contact = require('../models/Contact')
 // @desc    Get all users contacts
 // @access  Private
 router.get('/', auth, async (req, res) => {
-  try {
-    const contacts = await Contact.find({ user: req.user }).sort({ date: -1 })
-    res.json(contacts)
-  } catch (err) {
-    console.error(err.message)
-    res.status(500).send('Server Error')
-  }
+	try {
+		const contacts = await Contact.find({ user: req.user }).sort({ date: -1 })
+		res.json(contacts)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).send('Server Error')
+	}
 })
 
 // @route   POST api/contacts
 // @desc    Add new contact
 // @access  Private
-router.post('/', [auth, [
-  check('name', 'Name is required').not().isEmpty()
-]], async (req, res) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() })
-  }
+router.post(
+	'/',
+	[ auth, [ check('name', 'Name is required').not().isEmpty() ] ],
+	async (req, res) => {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() })
+		}
 
-  const { name, phone, email, type } = req.body
+		const { name, phone, email, type } = req.body
 
-  try {
-    const newContact = new Contact({ name, email, phone, type, user: req.user })
-    const contact = await newContact.save()
+		try {
+			const newContact = new Contact({ name, email, phone, type, user: req.user })
+			const contact = await newContact.save()
 
-    res.json(contact)
-  } catch (err) {
-    console.error(err.message)
-    res.status(500).send('Server Error')
-  }
-})
+			res.json(contact)
+		} catch (err) {
+			console.error(err.message)
+			res.status(500).send('Server Error')
+		}
+	}
+)
 
 // @route   PUT api/contacts/:id
 // @desc    Update contact
 // @access  Private
 router.put('/:id', (req, res) => {
-  res.send('Update contact')
+	res.send('Update contact')
 })
 
 // @route   DELETE api/contacts/:id
 // @desc    Delete contact
 // @access  Private
-router.put('/:id', (req, res) => {
-  res.send('Delete contact')
+router.delete('/:id', auth, async (req, res) => {
+	try {
+		const contact = await Contact.findById(req.params.id)
+
+		if (!contact) return res.status(404).json({ msg: 'Contact not found' })
+
+		// Make sure user owns contact
+		if (contact.user.toString() !== req.user)
+			return res.status(401).json({ msg: 'Not authorized' })
+
+		await Contact.findByIdAndRemove(req.params.id)
+
+		res.json({ msg: 'Contact removed' })
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).send('Server error')
+	}
 })
 
 module.exports = router
