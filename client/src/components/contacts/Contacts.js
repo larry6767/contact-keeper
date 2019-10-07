@@ -1,25 +1,36 @@
-import React, { Fragment, useContext } from 'react'
+import React, { Fragment, useContext, useEffect } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
+import Spinner from '../layout/Spinner'
 import Contact from './Contact'
 import ContactContext from '../../context/contact/contactContext'
 
 const Contacts = () => {
-	const contactContext = useContext(ContactContext),
-		{ contacts, filtered } = contactContext
+	const contactContext = useContext(ContactContext)
 
-	if (contacts.lenght === 0) return <h4>No contacts yet</h4>
+	const { contacts, filtered, getContacts, loading } = contactContext
+
+	useEffect(() => {
+		getContacts()
+		// eslint-disable-next-line
+	}, [])
+
+	if (contacts !== null && contacts.length === 0) return <h4>There are no contacts yet</h4>
 
 	const renderContact = (contact) => (
-		<CSSTransition key={contact.id} timeout={500} classNames='item'>
+		<CSSTransition key={contact._id} timeout={500} classNames='item'>
 			<Contact contact={contact} />
 		</CSSTransition>
 	)
 
 	return (
 		<Fragment>
-			<TransitionGroup>
-				{filtered !== null ? filtered.map(renderContact) : contacts.map(renderContact)}
-			</TransitionGroup>
+			{contacts !== null && !loading ? (
+				<TransitionGroup>
+					{filtered !== null ? filtered.map(renderContact) : contacts.map(renderContact)}
+				</TransitionGroup>
+			) : (
+				<Spinner />
+			)}
 		</Fragment>
 	)
 }
